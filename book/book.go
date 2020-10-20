@@ -1,7 +1,10 @@
 package book
 
 import (
+	"fmt"
+
 	"github.com/charathram/fiber101/database"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jinzhu/gorm"
 )
@@ -36,7 +39,22 @@ func GetBook(c *fiber.Ctx) error {
 
 // NewBook creates a new book in the DB
 func NewBook(c *fiber.Ctx) error {
+
+	var t interface{}
+
 	db := database.DBConn
+
+	t = c.Locals("user")
+	fmt.Printf("%T\n", t)
+
+	switch t := t.(type) {
+	default:
+		fmt.Println("Default")
+	case *jwt.Token:
+		fmt.Println("JWT Token Pointer")
+		myToken := *t
+		fmt.Println(myToken.Claims)
+	}
 
 	book := new(Book)
 	if err := c.BodyParser(book); err != nil {
